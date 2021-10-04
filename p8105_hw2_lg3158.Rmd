@@ -17,9 +17,12 @@ Read the sheet:
 
 library(readxl)
 getwd()
-Q1 <- read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", col_names = T)
-view(Q1)
-
+Q1 <- read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+                 range = "Mr. Trash Wheel!A2:N408",
+                 col_names = T,
+                 col_types = c("numeric", "guess", "numeric", "guess", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric") ,
+                 trim_ws = T, skip = 1)
+  
 
 ```
 
