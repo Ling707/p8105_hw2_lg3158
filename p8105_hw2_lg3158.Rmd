@@ -16,13 +16,17 @@ Read the sheet:
 ```{r Q1 read the Mr.Trash Wheel sheet}
 
 library(readxl)
-getwd()
 Q1 <- read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
-                 range = "Mr. Trash Wheel!A2:N408",
-                 col_names = T,
-                 col_types = c("numeric", "guess", "numeric", "guess", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric") ,
-                 trim_ws = T, skip = 1)
-  
+                sheet = "Mr. Trash Wheel",
+                range = cell_cols("A:N"),
+                trim_ws = T,
+                skip = 1,
+                col_names = T,
+                col_types = c("numeric","guess","numeric","guess","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric"),
+                .name_repair = "universal") %>%
+  janitor::clean_names()
+Q1 <- drop_na(Q1, dumpster) %>%
+    mutate(Q1, sports_balls = round(sports_balls, digits = 0))
 
 ```
 
