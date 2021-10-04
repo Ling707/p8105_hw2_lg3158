@@ -7,4 +7,19 @@ output: github_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
 ```
+
+# Problem 1
+
+Read the sheet:
+```{r Q1 read the Mr.Trash Wheel sheet}
+
+library(readxl)
+getwd()
+Q1 <- read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", col_names = T)
+view(Q1)
+
+
+```
+
