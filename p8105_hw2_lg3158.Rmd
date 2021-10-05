@@ -27,6 +27,56 @@ Q1 <- read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
   janitor::clean_names()
 Q1 <- drop_na(Q1, dumpster) %>%
     mutate(Q1, sports_balls = round(sports_balls, digits = 0))
+```
+
+The Q1 dataset now satisfies the criteria below:
+
+  - read from the excel 'Mr. Trash Wheel' sheet;
+  - omitted non-data entries;
+  - cleaned variable names;
+  - omitted rows with `NA` values in variable dumpster;
+  - round the values of sports_balls to the nearest integers
+  
+Now read and clean precipitation data for 2018 and 2019.
+
+```{r Q1 read precipitation data}
+pre2018 <- read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+                      range = "2018 Precipitation!A2:B14",
+                      col_names = T,
+                      col_types = c("guess","numeric"),
+                      skip = 1,
+                      .name_repair = "universal") %>%
+  janitor::clean_names()
+pre2018 <- drop_na(pre2018, total) %>%
+  mutate(pre2018, year = 2018)
+
+pre2019 <- read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+                      range = "2019 Precipitation!A2:B14",
+                      col_names = T,
+                      col_types = c("guess","numeric"),
+                      skip = 1) %>%
+  janitor::clean_names()
+  
+pre2019 <- drop_na(pre2019, total) %>%
+  mutate(pre2019, year = 2019)
+
+precipitation = bind_rows(pre2018, pre2019) %>%
+  mutate(month = month.name[month]) 
+
+precipitation <- rename(precipitation, precipitation_in = total)
+  
+
+Q1_final = left_join(Q1, precipitation, by = c("year","month"))
 
 ```
+
+The dataset Q1_final contains data from Mr. Trash Wheel sheet and the precipitation data of 2018 and 2019. The brief summary of the data is below:
+`r library(skimr)`
+`r skimr::skim(Q1_final)`
+For available data, the total precipitation in 2018 is `r sum(pull(pre2018,total))` inches. The median number of sports balls in a dumpster in 2019 was `r median(pull(subset(Q1_final, year == "2019"),sports_balls))`.
+
+# Problem 2
+
+
+
 
