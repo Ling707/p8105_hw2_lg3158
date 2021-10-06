@@ -8,6 +8,7 @@ output: github_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(lubridate)
 ```
 
 # Problem 1
@@ -75,6 +76,57 @@ The dataset Q1_final contains data from Mr. Trash Wheel sheet and the precipitat
 For available data, the total precipitation in 2018 is `r sum(pull(pre2018,total))` inches. The median number of sports balls in a dumpster in 2019 was `r median(pull(subset(Q1_final, year == "2019"),sports_balls))`.
 
 # Problem 2
+
+Clean the data in pols-month.csv.
+```{r}
+pols_month = read_csv("./data/fivethirtyeight_datasets/pols-month.csv") %>%
+  separate(mon, into = c("year","month","day"), convert = T) %>%
+  mutate(month = month.name[month]) %>%
+  mutate(president = if_else(prez_gop == 1, "gop", "dem")) %>%
+  select(-c("prez_gop","prez_dem","day"))
+```
+
+Clean the data in snp.csv.
+```{r}
+snp = read_csv("./data/fivethirtyeight_datasets/snp.csv") %>%
+  mutate(date = lubridate::mdy(date)) %>%
+  separate(date, into = c("year","month" ,NA), convert = T) %>%
+  arrange(year, month) %>%
+  mutate(month = month.name[month])
+```
+
+Clean the data in unemployment.csv.
+```{r}
+unem = read_csv("./data/fivethirtyeight_datasets/unemployment.csv") %>%
+  rename(mon_1 = Jan,
+         mon_2 = Feb,
+         mon_3 = Mar,
+         mon_4 = Apr,
+         mon_5 = May,
+         mon_6 = Jun,
+         mon_7 = Jul,
+         mon_8 = Aug,
+         mon_9 = Sep,
+         mon_10 = Oct,
+         mon_11 = Nov,
+         mon_12 = Dec,
+         year = Year) %>%
+  pivot_longer(
+    cols = mon_1:mon_12,
+    names_to = "month",
+    values_to = "unemp_rate",
+    names_prefix = "mon_"
+  ) %>%
+  mutate(month = month.name[as.numeric(month)])
+```
+
+Now merge the 3 datasets: snp into pols, then unemployment into the merged.
+
+```{r}
+merge_1 = left_join(pols_month,snp, by = c("year","month"))
+
+merge_2 = left_join(merge_1, unem, by = c("year","month"))
+```
 
 
 
