@@ -16,7 +16,7 @@ Read the sheet:
 ```{r Q1 read the Mr.Trash Wheel sheet}
 
 library(readxl)
-Q1 <- read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+Q1 = read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
                 sheet = "Mr. Trash Wheel",
                 range = cell_cols("A:N"),
                 trim_ws = T,
@@ -24,9 +24,9 @@ Q1 <- read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
                 col_names = T,
                 col_types = c("numeric","guess","numeric","guess","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric"),
                 .name_repair = "universal") %>%
-  janitor::clean_names()
-Q1 <- drop_na(Q1, dumpster) %>%
-    mutate(Q1, sports_balls = round(sports_balls, digits = 0))
+  janitor::clean_names() %>%
+  mutate( sports_balls = round(sports_balls, digits = 0)) %>%
+  filter( !is.na(dumpster))
 ```
 
 The Q1 dataset now satisfies the criteria below:
@@ -46,24 +46,23 @@ pre2018 <- read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
                       col_types = c("guess","numeric"),
                       skip = 1,
                       .name_repair = "universal") %>%
-  janitor::clean_names()
-pre2018 <- drop_na(pre2018, total) %>%
-  mutate(pre2018, year = 2018)
+  janitor::clean_names() %>%
+  drop_na(total) %>%
+  mutate(year = 2018) %>%
+  relocate(year)
 
 pre2019 <- read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
                       range = "2019 Precipitation!A2:B14",
                       col_names = T,
                       col_types = c("guess","numeric"),
                       skip = 1) %>%
-  janitor::clean_names()
-  
-pre2019 <- drop_na(pre2019, total) %>%
-  mutate(pre2019, year = 2019)
+  janitor::clean_names() %>%
+  drop_na(total) %>%
+  mutate(year = 2019)
 
 precipitation = bind_rows(pre2018, pre2019) %>%
-  mutate(month = month.name[month]) 
-
-precipitation <- rename(precipitation, precipitation_in = total)
+  mutate(month = month.name[month]) %>%
+  rename(precipitation_in = total)
   
 
 Q1_final = left_join(Q1, precipitation, by = c("year","month"))
