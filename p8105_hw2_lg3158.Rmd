@@ -136,11 +136,48 @@ The dataset `pols_month` includes the distribution of national politicians in th
 Loading and tidying the dataset.
 ```{r}
 Q3 = read_csv("./data/Popular_Baby_Names.csv") %>%
-  janitor::clean_names()
+  janitor::clean_names() %>%
+  mutate(gender = str_to_lower(gender),
+         ethnicity = str_to_lower(ethnicity),
+         gender = as_factor(gender),
+         childs_first_name = as_factor(str_to_lower(childs_first_name)),
+         ethnicity[ethnicity == "asian and paci"] <- "asian and pacific islander",
+         ethnicity[ethnicity == "black non hisp"] <- "black non hispanic",
+         ethnicity[ethnicity == "white non hisp"] <- "white non hispanic",
+         ethnicity = as_factor(ethnicity)
+         ) %>%
+  select(year_of_birth, gender, ethnicity, childs_first_name, count, rank)
+Q3 <- Q3[!duplicated(Q3), ]
+```
 
-summary(Q3)
+Make a table showing the rank in popularity of the name “Olivia” as a female baby name over time.
+```{r}
+Q3_olivia <- subset(Q3, childs_first_name == "olivia" & gender == "female") %>%
+  select(-childs_first_name) %>%
+  arrange(year_of_birth)
+knitr::kable(Q3_olivia)
+```
+Produce a similar table showing the most popular name among male children over time.
+The table should be:
+  - show the year of birth in an ascending order (2011 -> 2016).
+  - by ethnicity group
+  - the names ranking "1"
 
+```{r}
 
+Q3_pop_male = subset(Q3, gender == "male") %>%
+  arrange(year_of_birth) %>%
+  filter(rank == 1)
+knitr::kable(Q3_pop_male)
+```
+
+For male, white non-hispanic children born in 2016, produce a scatter plot showing the number of children with a name (y axis) against the rank in popularity of that name (x axis).
+
+```{r}
+Q3_male_plot = subset(Q3, gender == "male" & ethnicity == "white non hispanic" & year_of_birth == 2016)
+ggplot(Q3_male_plot, aes(x = rank, y = count, label = childs_first_name)) +
+  geom_point() +
+  geom_text(aes(label = childs_first_name), hjust = -0.5)
 ```
 
 
