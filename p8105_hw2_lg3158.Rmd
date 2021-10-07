@@ -128,6 +128,21 @@ merge_1 = left_join(pols_month,snp, by = c("year","month"))
 merge_2 = left_join(merge_1, unem, by = c("year","month"))
 ```
 
+The dataset `pols_month` includes the distribution of national politicians in the 2 parties from `r min(pull(pols_month,year))` to `r max(pull(pols_month, year))`. This dataset includes these variables: `r names(pols_month)`. The dataset `snp` describes the S&P index from `r min(pull(snp,year))` to `r max(pull(snp,year))`, including these variables: `r names(snp)`. The dataset `unemployment` describes the percentage of the unemployment from `r min(pull(unem,year))` to `r max(pull(unem,year))`. The brief descripition of the dataset and the distribution of S&P index and percentage of unemployment is below:
+`r skimr::skim(merge_2)`
+
+# Problem 3
+
+Loading and tidying the dataset.
+```{r}
+Q3 = read_csv("./data/Popular_Baby_Names.csv") %>%
+  janitor::clean_names()
+
+summary(Q3)
+
+
+```
+
 
 
 
