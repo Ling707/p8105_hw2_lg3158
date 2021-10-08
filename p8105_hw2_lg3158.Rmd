@@ -9,6 +9,7 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(lubridate)
+library(readxl)
 ```
 
 # Problem 1
@@ -16,8 +17,7 @@ library(lubridate)
 Read the sheet:
 ```{r Q1 read the Mr.Trash Wheel sheet}
 
-library(readxl)
-Q1 = read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+Q1 = read_excel("./data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx",
                 sheet = "Mr. Trash Wheel",
                 range = cell_cols("A:N"),
                 trim_ws = T,
@@ -27,7 +27,7 @@ Q1 = read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
                 .name_repair = "universal") %>%
   janitor::clean_names() %>%
   mutate( sports_balls = round(sports_balls, digits = 0)) %>%
-  filter( !is.na(dumpster))
+  drop_na(dumpster)
 ```
 
 The Q1 dataset now satisfies the criteria below:
@@ -41,7 +41,7 @@ The Q1 dataset now satisfies the criteria below:
 Now read and clean precipitation data for 2018 and 2019.
 
 ```{r Q1 read precipitation data}
-pre2018 <- read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+pre2018 <- read_excel("./data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx",
                       range = "2018 Precipitation!A2:B14",
                       col_names = T,
                       col_types = c("guess","numeric"),
@@ -52,7 +52,7 @@ pre2018 <- read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
   mutate(year = 2018) %>%
   relocate(year)
 
-pre2019 <- read_excel("./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx",
+pre2019 <- read_excel("./data/Trash-Wheel-Collection-Totals-7-2020-2.xlsx",
                       range = "2019 Precipitation!A2:B14",
                       col_names = T,
                       col_types = c("guess","numeric"),
